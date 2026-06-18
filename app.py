@@ -25,7 +25,7 @@ from vat_reconciliation_engine.schema import SchemaValidationError
 
 CONFIG_PATH = ROOT / "config" / "vat_generic.yml"
 SAMPLE_DATA_PATH = ROOT / "data" / "sample"
-APP_VERSION = "v0.2.1"
+APP_VERSION = "v0.2.2"
 
 
 def inject_dashboard_css() -> None:
