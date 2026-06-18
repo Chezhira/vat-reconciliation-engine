@@ -79,3 +79,18 @@ In the Streamlit dashboard, reviewers should look at:
   source rows.
 
 The dashboard is intentionally read-only and deterministic for the MVP.
+
+## Screenshot Walkthrough
+
+The screenshots in `docs/screenshots/` show the main finance-review path:
+
+- [Dashboard summary](screenshots/vat_dashboard_summary.png): VAT position
+  status cards and exception count for review triage.
+- [Reconciliation checks](screenshots/vat_reconciliation_checks.png): the three
+  core VAT return and GL control checks.
+- [Exception register](screenshots/vat_exception_register.png):
+  transaction-level documentation and control exceptions.
+- [Upload mode](screenshots/vat_upload_mode.png): CSV upload controls for files
+  that follow the documented schemas.
+- [Workbook download](screenshots/vat_workbook_download.png): export action for
+  the audit-ready exception workbook.

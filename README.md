@@ -15,6 +15,36 @@ This public portfolio version includes a bundled synthetic demo dataset. Users
 can also test the engine with their own CSV exports by replacing the sample
 files with data that follows the documented schema.
 
+## Dashboard Preview
+
+The Streamlit dashboard is designed for a finance reviewer to move from VAT
+position summary to exception follow-up without losing the audit trail.
+
+**Dashboard summary:** high-level VAT variances, exception count, and review
+status cards for sign-off triage.
+
+![VAT dashboard summary](docs/screenshots/vat_dashboard_summary.png)
+
+**Reconciliation checks:** output VAT, input VAT, and GL VAT control account
+checks shown as a concise control review table.
+
+![VAT reconciliation checks](docs/screenshots/vat_reconciliation_checks.png)
+
+**Exception register:** transaction-level follow-up items for documentation,
+duplicates, unclaimed input VAT, and control-account variance.
+
+![VAT exception register](docs/screenshots/vat_exception_register.png)
+
+**Upload mode:** reviewer-facing CSV upload path for testing exports that follow
+the documented schema.
+
+![VAT upload mode](docs/screenshots/vat_upload_mode.png)
+
+**Workbook download:** in-dashboard export action for the audit-ready exception
+workbook.
+
+![VAT workbook download](docs/screenshots/vat_workbook_download.png)
+
 ## Why This Matters
 
 VAT returns are often prepared from several sources: ERP tax reports, invoice
@@ -120,8 +150,6 @@ detail, GL movement, payments/refunds, exceptions, and reconciling items.
 For a reviewer-oriented walkthrough of the input files, reconciliation flow,
 sample exceptions, workbook review path, and Streamlit dashboard review path,
 see [docs/demo_notes.md](docs/demo_notes.md).
-
-Screenshots will be added after the Streamlit dashboard review pass.
 
 ## Quick Start
 
