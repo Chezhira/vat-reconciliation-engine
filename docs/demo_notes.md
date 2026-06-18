@@ -1,15 +1,16 @@
 # Demo Notes
 
-These notes support the v0.1.1 portfolio walkthrough for the VAT Reconciliation
-Engine. The demo uses synthetic data only and does not connect to tax authority,
-banking, payroll, supplier, OCR, LLM, API, authentication, or database systems.
+These notes support the portfolio walkthrough for the VAT Reconciliation
+Engine. The public repository uses a bundled synthetic dataset and does not
+connect to tax authority, banking, payroll, supplier, OCR, LLM, API,
+authentication, or database systems.
 
 ## What The App Demonstrates
 
 The app demonstrates a deterministic VAT control workflow: source register
-ingestion, schema validation, VAT return reconciliation, VAT GL control account
-comparison, exception identification, dashboard review, and Excel workbook
-export.
+ingestion, schema validation, VAT return review, VAT GL control account
+comparison, payment/refund context, exception identification, dashboard review,
+and Excel workbook export.
 
 It is designed as a portfolio-ready finance engineering slice. The point is to
 show how repeatable control evidence can be produced from structured finance

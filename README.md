@@ -1,36 +1,63 @@
 # VAT Reconciliation Engine
 
-Synthetic-data-only Finance Engineer portfolio MVP for reconciling VAT source
-registers to a VAT return summary and VAT GL control account, then exporting an
-audit-ready exception workbook.
+A finance controls application for reconciling VAT source registers, VAT return
+summaries, VAT payments/refunds, and GL VAT control account movements.
 
-## What It Does
+The engine validates input schemas, calculates expected VAT positions,
+identifies reconciliation differences, flags documentation and control
+exceptions, and exports an audit-ready Excel workbook for follow-up review.
 
-The VAT Reconciliation Engine ingests bundled synthetic CSV files, validates
-their configured schemas, runs deterministic VAT reconciliation checks, and
-writes a sample Excel workbook for review. The Streamlit dashboard gives a quick
-view of the VAT position, return variances, GL control variance, source
-registers, and exception list.
+This public portfolio version includes a bundled synthetic demo dataset. Users
+can also test the engine with their own CSV exports by replacing the sample
+files with data that follows the documented schema.
 
-This is a finance-control vertical slice rather than a tax filing system. It
-shows how a Finance Engineer can turn messy VAT review work into a repeatable
-control layer: configured inputs, deterministic checks, exception evidence, and
-an export that supports audit follow-up.
+## Why This Matters
 
-## Scope
+VAT returns are often prepared from several sources: ERP tax reports, invoice
+registers, spreadsheets, GL control accounts, and payment or refund records.
+Those sources do not always agree.
 
-- Synthetic sample CSVs only.
-- Deterministic pandas reconciliation logic.
-- Config-first VAT rates, thresholds, mandatory fields, and return box mapping.
-- Streamlit dashboard for reviewing the VAT position.
-- Excel exception workbook for audit-ready review.
+Differences may come from timing, missing invoices, incorrect tax codes,
+unclaimed input VAT, missing supplier VAT numbers, duplicate invoices, or GL
+posting issues. A repeatable reconciliation layer improves control quality,
+audit readiness, and review discipline before a VAT return is finalized.
 
-No LLM calls, OCR, APIs, authentication, databases, live integrations, or tax
-authority connections are included in this MVP.
+## What The Tool Does
+
+- Ingests VAT source registers, VAT return summary data, GL VAT control account
+  data, and VAT payment/refund records.
+- Validates files against configured schemas.
+- Applies deterministic VAT reconciliation checks.
+- Flags control and documentation exceptions.
+- Produces a VAT position summary.
+- Exports an Excel exception workbook.
+- Provides a Streamlit dashboard for review.
+
+## Current Release
+
+The v0.1 release includes deterministic pandas reconciliation logic,
+config-first VAT rates, mandatory fields, materiality thresholds, VAT return box
+mapping, a Streamlit dashboard, Excel workbook export, and CI checks with ruff,
+pytest, and a sample-data smoke test.
+
+The repository does not include LLM calls, OCR, APIs, authentication, databases,
+live tax authority submission, or jurisdiction-specific compliance
+certification.
+
+## Data Safety And Demo Dataset
+
+This repository ships with synthetic demo data so the project can be reviewed
+publicly without exposing employer, client, supplier, tax, bank, or commercially
+sensitive records.
+
+To test the engine with your own data, replace the CSV files in `data/sample/`
+with exports that follow the same column structure and schema expectations. The
+current release supports file replacement using the documented schema.
+Interactive upload support is a planned enhancement.
 
 ## Inputs
 
-The MVP reads these files from `data/sample/`:
+The engine reads these files from `data/sample/`:
 
 - `sample_sales_vat_register.csv`
 - `sample_purchase_vat_register.csv`
@@ -41,35 +68,58 @@ The MVP reads these files from `data/sample/`:
 Validation rules, mandatory fields, VAT rates, materiality thresholds, and VAT
 return box mappings are configured in `config/vat_generic.yml`.
 
-## MVP Reconciliation Checks
+## Reconciliation Workflow
 
-The first vertical slice runs three core checks:
+The current workflow is:
 
-- VAT return output mismatch: compares output VAT in the sales register to the
-  configured VAT return output box.
-- VAT return input mismatch: compares claimed input VAT in the purchase register
-  to the configured VAT return input box.
-- GL control account variance: compares the expected VAT control balance to the
-  VAT GL control account movement.
+1. Load CSV exports.
+2. Validate source files against configured schemas.
+3. Calculate VAT positions from source registers.
+4. Compare calculated VAT to VAT return summary boxes.
+5. Reconcile expected VAT control balance to GL movement.
+6. Generate exceptions and reconciling items.
+7. Review results in Streamlit.
+8. Export the Excel workbook.
 
-## Current Sample Exceptions
+## Reconciliation Checks
 
-The bundled synthetic dataset currently produces six exceptions:
+- Output VAT: sales VAT register compared to the VAT return output amount.
+- Input VAT: purchase VAT register compared to the VAT return input claim.
+- GL VAT control account: expected VAT balance compared to GL movement and
+  control account position.
 
-- Missing tax invoice reference: `SINV-1004`, sales, `504.00`.
-- Missing supplier VAT number: `PINV-2003`, purchases, `162.00`.
-- Duplicate invoice number: `SINV-1002`, sales, `1,350.00`.
-- Duplicate invoice number: `SINV-1002`, sales, `216.00`.
-- Unclaimed input VAT: `PINV-2005`, purchases, `270.00`.
-- GL control account variance: reconciliation variance, `12.00`.
+## Sample Exceptions
+
+The bundled demo dataset currently produces six exceptions:
+
+| Exception type | Example reference | Area | Amount |
+| -------------- | ----------------: | ---- | -----: |
+| Missing tax invoice reference | `SINV-1004` | Sales | 504.00 |
+| Missing supplier VAT number | `PINV-2003` | Purchases | 162.00 |
+| Duplicate invoice number | `SINV-1002` | Sales | 1,350.00 |
+| Duplicate invoice number | `SINV-1002` | Sales | 216.00 |
+| Unclaimed input VAT | `PINV-2005` | Purchases | 270.00 |
+| GL control account variance | Reconciliation variance | GL control | 12.00 |
+
+## Outputs
+
+- Streamlit dashboard for reviewing VAT variances, exceptions, and source
+  registers.
+- Excel workbook:
+  `outputs/sample_vat_recon/sample_vat_exception_workbook.xlsx`.
+
+The workbook supports review of the VAT summary, output VAT detail, input VAT
+detail, GL movement, payments/refunds, exceptions, and reconciling items.
 
 ## Demo Walkthrough
 
-For a reviewer-oriented walkthrough of the synthetic inputs, reconciliation
-flow, sample exceptions, exported workbook, and Streamlit dashboard review path,
+For a reviewer-oriented walkthrough of the input files, reconciliation flow,
+sample exceptions, workbook review path, and Streamlit dashboard review path,
 see [docs/demo_notes.md](docs/demo_notes.md).
 
-## Run Locally
+Screenshots will be added after the Streamlit dashboard review pass.
+
+## Quick Start
 
 ```powershell
 python -m venv .venv
@@ -77,25 +127,19 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
 
-Run tests:
-
-```powershell
-python -m pytest -q
-```
-
-Run the sample-data smoke script:
-
-```powershell
-python scripts\run_sample_smoke.py
-```
-
-Run the Streamlit dashboard:
+Run the dashboard:
 
 ```powershell
 streamlit run app.py
 ```
 
-Full local verification:
+Run the smoke test:
+
+```powershell
+python scripts\run_sample_smoke.py
+```
+
+## Quality Checks
 
 ```powershell
 python -m ruff check .
@@ -103,18 +147,14 @@ python -m ruff format --check .
 python -m pytest -q
 python scripts\run_sample_smoke.py
 ```
-
-The smoke test writes a sample exception workbook to
-`outputs/sample_vat_recon/sample_vat_exception_workbook.xlsx`.
 
 ## CI
 
-GitHub Actions runs the same deterministic quality gates on push and pull
-request:
+GitHub Actions runs ruff, format check, pytest, and the sample-data smoke test
+on push and pull request.
 
-```powershell
-python -m ruff check .
-python -m ruff format --check .
-python -m pytest -q
-python scripts\run_sample_smoke.py
-```
+## Portfolio Signal
+
+This project demonstrates VAT reconciliation judgment, GL control account
+discipline, exception reporting, audit trail thinking, config-driven finance
+automation, test-covered deterministic logic, and CI/CD discipline.
