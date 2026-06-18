@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 import pytest
+
 from vat_reconciliation_engine.config_loader import load_config
 from vat_reconciliation_engine.ingestion import load_dataset, load_sample_data
 from vat_reconciliation_engine.schema import SchemaValidationError, validate_dataframe
