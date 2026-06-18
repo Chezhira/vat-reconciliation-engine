@@ -63,6 +63,12 @@ The bundled synthetic dataset currently produces six exceptions:
 - Unclaimed input VAT: `PINV-2005`, purchases, `270.00`.
 - GL control account variance: reconciliation variance, `12.00`.
 
+## Demo Walkthrough
+
+For a reviewer-oriented walkthrough of the synthetic inputs, reconciliation
+flow, sample exceptions, exported workbook, and Streamlit dashboard review path,
+see [docs/demo_notes.md](docs/demo_notes.md).
+
 ## Run Locally
 
 ```powershell
