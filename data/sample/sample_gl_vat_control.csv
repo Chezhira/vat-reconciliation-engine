@@ -1,0 +1,9 @@
+posting_date,journal_id,description,debit,credit
+2026-03-02,GL-3001,Output VAT on sales,0.00,1800.00
+2026-03-05,GL-3002,Output VAT on sales,0.00,1350.00
+2026-03-12,GL-3003,Output VAT on sales,0.00,504.00
+2026-03-20,GL-3004,Output VAT on duplicate sales invoice,0.00,216.00
+2026-03-03,GL-3101,Input VAT on purchases,540.00,0.00
+2026-03-09,GL-3102,Input VAT on purchases,396.00,0.00
+2026-03-15,GL-3103,Input VAT on purchases,162.00,0.00
+2026-03-31,GL-3999,Manual rounding adjustment,0.00,12.00

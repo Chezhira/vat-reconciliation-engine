@@ -1,0 +1,62 @@
+country_profile: Generic Synthetic VAT
+currency: USD
+period: "2026-03"
+
+vat_rates:
+  standard: 0.18
+  zero_rated: 0.0
+  exempt: 0.0
+
+thresholds:
+  material_variance: 1.00
+  timing_days: 31
+
+return_box_mapping:
+  output_vat: box_01_output_vat
+  input_vat: box_02_input_vat
+  net_vat_payable: box_03_net_vat_payable
+
+datasets:
+  sales:
+    file: sample_sales_vat_register.csv
+    mandatory_fields:
+      - invoice_id
+      - invoice_date
+      - customer_name
+      - tax_code
+      - net_amount
+      - vat_amount
+      - tax_invoice_ref
+  purchases:
+    file: sample_purchase_vat_register.csv
+    mandatory_fields:
+      - invoice_id
+      - invoice_date
+      - supplier_name
+      - supplier_vat_number
+      - tax_code
+      - net_amount
+      - vat_amount
+      - tax_invoice_ref
+      - claimed_in_return
+  vat_return:
+    file: sample_vat_return.csv
+    mandatory_fields:
+      - box_code
+      - description
+      - amount
+  gl:
+    file: sample_gl_vat_control.csv
+    mandatory_fields:
+      - posting_date
+      - journal_id
+      - description
+      - debit
+      - credit
+  payments_refunds:
+    file: sample_vat_payments_refunds.csv
+    mandatory_fields:
+      - payment_date
+      - reference
+      - amount
+      - direction

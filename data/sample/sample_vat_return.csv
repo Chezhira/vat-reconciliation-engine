@@ -1,0 +1,4 @@
+box_code,description,amount
+box_01_output_vat,Output VAT due,3870.00
+box_02_input_vat,Input VAT claimed,1098.00
+box_03_net_vat_payable,Net VAT payable,2772.00

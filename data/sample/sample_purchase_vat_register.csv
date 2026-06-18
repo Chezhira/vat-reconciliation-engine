@@ -1,0 +1,6 @@
+invoice_id,invoice_date,supplier_name,supplier_vat_number,tax_code,net_amount,vat_amount,tax_invoice_ref,claimed_in_return
+PINV-2001,2026-03-03,Synthetic Office Supplies Ltd,SYN-VAT-001,standard,3000.00,540.00,TX-P-2001,true
+PINV-2002,2026-03-09,Synthetic Logistics Ltd,SYN-VAT-002,standard,2200.00,396.00,TX-P-2002,true
+PINV-2003,2026-03-15,Synthetic Maintenance Co,,standard,900.00,162.00,TX-P-2003,true
+PINV-2004,2026-03-18,Synthetic Training Provider,SYN-VAT-004,exempt,1200.00,0.00,TX-P-2004,false
+PINV-2005,2026-03-25,Synthetic Equipment Hire,SYN-VAT-005,standard,1500.00,270.00,TX-P-2005,false

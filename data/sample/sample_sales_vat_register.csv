@@ -1,0 +1,6 @@
+invoice_id,invoice_date,customer_name,tax_code,net_amount,vat_amount,tax_invoice_ref
+SINV-1001,2026-03-02,Synthetic Retail Customer A,standard,10000.00,1800.00,TX-S-1001
+SINV-1002,2026-03-05,Synthetic Distribution Customer B,standard,7500.00,1350.00,TX-S-1002
+SINV-1003,2026-03-07,Synthetic Export Customer C,zero_rated,4200.00,0.00,TX-S-1003
+SINV-1004,2026-03-12,Synthetic Local Customer D,standard,2800.00,504.00,
+SINV-1002,2026-03-20,Synthetic Distribution Customer B,standard,1200.00,216.00,TX-S-1002-DUP
