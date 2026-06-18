@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+from io import StringIO
+
 import pandas as pd
 import pytest
 
 from vat_reconciliation_engine.config_loader import load_config
-from vat_reconciliation_engine.ingestion import load_dataset, load_sample_data
+from vat_reconciliation_engine.ingestion import (
+    DATASET_LABELS,
+    load_dataset,
+    load_sample_data,
+    load_uploaded_data,
+    missing_upload_datasets,
+    required_upload_datasets,
+)
 from vat_reconciliation_engine.schema import SchemaValidationError, validate_dataframe
 
 
@@ -46,3 +55,58 @@ def test_schema_validation_reports_missing_required_fields(project_root):
 
     with pytest.raises(SchemaValidationError, match="tax_invoice_ref"):
         validate_dataframe(frame, "sales", config)
+
+
+def test_upload_helpers_define_required_dataset_order_and_labels():
+    assert required_upload_datasets() == [
+        "sales",
+        "purchases",
+        "vat_return",
+        "gl",
+        "payments_refunds",
+    ]
+    assert DATASET_LABELS["sales"] == "Sales VAT register"
+    assert DATASET_LABELS["payments_refunds"] == "VAT payments/refunds"
+
+
+def test_missing_upload_datasets_reports_required_gaps():
+    uploaded_files = {
+        "sales": StringIO("invoice_id\nSINV-TEST\n"),
+        "purchases": None,
+    }
+
+    assert missing_upload_datasets(uploaded_files) == [
+        "purchases",
+        "vat_return",
+        "gl",
+        "payments_refunds",
+    ]
+
+
+def test_loads_uploaded_csv_files_with_same_schema_validation(project_root):
+    config = load_config(project_root / "config" / "vat_generic.yml")
+    uploaded_files = {}
+    for dataset in required_upload_datasets():
+        sample_frame = load_dataset(project_root / "data" / "sample", dataset, config)
+        uploaded_files[dataset] = StringIO(sample_frame.to_csv(index=False))
+
+    data = load_uploaded_data(uploaded_files, config)
+
+    assert len(data.sales) == 5
+    assert len(data.purchases) == 5
+    assert len(data.vat_return) == 3
+    assert len(data.gl) == 8
+    assert len(data.payments_refunds) == 1
+
+
+def test_uploaded_csv_schema_errors_are_raised(project_root):
+    config = load_config(project_root / "config" / "vat_generic.yml")
+    uploaded_files = {}
+    for dataset in required_upload_datasets():
+        sample_frame = load_dataset(project_root / "data" / "sample", dataset, config)
+        if dataset == "sales":
+            sample_frame = sample_frame.drop(columns=["tax_invoice_ref"])
+        uploaded_files[dataset] = StringIO(sample_frame.to_csv(index=False))
+
+    with pytest.raises(SchemaValidationError, match="sales is missing"):
+        load_uploaded_data(uploaded_files, config)
