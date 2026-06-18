@@ -12,8 +12,18 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from vat_reconciliation_engine.config_loader import load_config
-from vat_reconciliation_engine.ingestion import load_sample_data
+from vat_reconciliation_engine.ingestion import (
+    DATASET_LABELS,
+    load_sample_data,
+    load_uploaded_data,
+    missing_upload_datasets,
+    required_upload_datasets,
+)
 from vat_reconciliation_engine.reconciliation import build_reconciliation
+from vat_reconciliation_engine.schema import SchemaValidationError
+
+CONFIG_PATH = ROOT / "config" / "vat_generic.yml"
+SAMPLE_DATA_PATH = ROOT / "data" / "sample"
 
 
 st.set_page_config(page_title="VAT Reconciliation Engine", layout="wide")
@@ -30,19 +40,65 @@ st.markdown(
     """
 )
 
-config = load_config(ROOT / "config" / "vat_generic.yml")
-data = load_sample_data(ROOT / "data" / "sample", config)
+config = load_config(CONFIG_PATH)
+
+with st.sidebar:
+    st.header("Data Mode")
+    data_mode = st.radio(
+        "Choose review dataset",
+        ["Use bundled demo data", "Upload my own CSV exports"],
+        label_visibility="collapsed",
+    )
+
+    uploaded_files = {}
+    if data_mode == "Upload my own CSV exports":
+        st.caption("Upload all five required CSV exports. Files are processed in-session only.")
+        for dataset in required_upload_datasets():
+            uploaded_files[dataset] = st.file_uploader(
+                DATASET_LABELS[dataset],
+                type=["csv"],
+                key=f"upload_{dataset}",
+            )
+
+missing_uploads = missing_upload_datasets(uploaded_files)
+if data_mode == "Upload my own CSV exports" and missing_uploads:
+    missing_labels = [DATASET_LABELS[dataset] for dataset in missing_uploads]
+    with st.sidebar:
+        st.warning("Upload mode needs all five CSV files before reconciliation can run.")
+    st.info(
+        "Upload all required CSV exports to run the VAT reconciliation. Missing files: "
+        + ", ".join(missing_labels)
+        + "."
+    )
+    st.stop()
+
+try:
+    if data_mode == "Upload my own CSV exports":
+        data = load_uploaded_data(uploaded_files, config)
+        data_source = "Uploaded CSV exports"
+    else:
+        data = load_sample_data(SAMPLE_DATA_PATH, config)
+        data_source = "`data/sample/` bundled demo CSVs"
+except SchemaValidationError as exc:
+    st.error(f"Schema validation failed: {exc}")
+    st.info("Check the uploaded CSV column names against `config/vat_generic.yml`.")
+    st.stop()
+except Exception as exc:  # noqa: BLE001
+    st.error(f"Unable to read uploaded CSV files: {exc}")
+    st.info("Confirm each upload is a valid CSV file with the documented columns.")
+    st.stop()
+
 result = build_reconciliation(data, config)
 
 with st.sidebar:
     st.header("Review Context")
     st.write("Current release: v0.1.2")
-    st.write("Mode: public portfolio demo")
-    st.write("Data source: `data/sample/` CSV exports")
+    st.write(f"Mode: {data_mode}")
+    st.write(f"Data source: {data_source}")
     st.write("Config: `config/vat_generic.yml`")
     st.caption(
-        "The public repo ships with demo data. Users can replace the CSV files "
-        "with exports that follow the documented schema."
+        "The public repo ships with demo data. Uploaded files are processed for "
+        "the current Streamlit session and are not persisted by the app."
     )
 
 st.subheader("How To Read This Dashboard")
