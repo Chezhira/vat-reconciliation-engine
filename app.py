@@ -25,6 +25,7 @@ from vat_reconciliation_engine.schema import SchemaValidationError
 
 CONFIG_PATH = ROOT / "config" / "vat_generic.yml"
 SAMPLE_DATA_PATH = ROOT / "data" / "sample"
+APP_VERSION = "v0.2.1"
 
 
 def inject_dashboard_css() -> None:
@@ -269,15 +270,11 @@ except Exception as exc:  # noqa: BLE001
 result = build_reconciliation(data, config)
 
 with st.sidebar:
-    st.header("Review Context")
-    st.write("Current release: v0.1.3")
-    st.write(f"Mode: {data_mode}")
-    st.write(f"Data source: {data_source}")
-    st.write("Config: `config/vat_generic.yml`")
-    st.caption(
-        "The public repo ships with demo data. Uploaded files are processed for "
-        "the current Streamlit session and are not persisted by the app."
-    )
+    with st.expander("About this demo", expanded=False):
+        st.caption(f"Current release: {APP_VERSION}")
+        st.caption("Config file: `config/vat_generic.yml`")
+        st.caption("The public repo ships with bundled demo data.")
+        st.caption("Uploaded CSVs are processed in-session and are not persisted.")
 
 render_section_header(
     "How To Read This Dashboard",
