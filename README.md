@@ -1,5 +1,9 @@
 # VAT Reconciliation Engine
 
+[![CI](https://github.com/Chezhira/vat-reconciliation-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Chezhira/vat-reconciliation-engine/actions/workflows/ci.yml)
+![Python >=3.10](https://img.shields.io/badge/python-%3E%3D3.10-blue)
+[![Latest tag](https://img.shields.io/github/v/tag/Chezhira/vat-reconciliation-engine?label=release&sort=semver)](https://github.com/Chezhira/vat-reconciliation-engine/tags)
+
 A finance controls application for reconciling VAT source registers, VAT return
 summaries, VAT payments/refunds, and GL VAT control account movements.
 
