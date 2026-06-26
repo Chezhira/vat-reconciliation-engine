@@ -33,7 +33,7 @@ def inject_dashboard_css() -> None:
         """
         <style>
         .block-container {
-            padding-top: 2rem;
+            padding-top: 1.4rem;
             padding-bottom: 3rem;
         }
 
@@ -44,33 +44,50 @@ def inject_dashboard_css() -> None:
 
         .hero-card {
             background: linear-gradient(135deg, #ffffff 0%, #eef5ff 100%);
-            border: 1px solid #d9e4f5;
-            border-radius: 14px;
-            padding: 1.35rem 1.5rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+            border: 1px solid #d8e3f3;
+            border-radius: 16px;
+            padding: 1.05rem 1.25rem;
+            margin-bottom: 0.9rem;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
         }
 
         .hero-title {
             color: #172033;
-            font-size: 2.2rem;
+            font-size: 2.05rem;
             font-weight: 760;
             margin: 0;
             line-height: 1.12;
         }
 
         .hero-copy {
-            color: #3f4b5f;
-            font-size: 1rem;
-            line-height: 1.55;
-            max-width: 58rem;
-            margin: 0.75rem 0 0;
+            color: #334155;
+            font-size: 1.02rem;
+            line-height: 1.4;
+            max-width: 52rem;
+            margin: 0.5rem 0 0;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+        }
+
+        .hero-meta span {
+            background: #ffffff;
+            border: 1px solid #dbeafe;
+            border-radius: 999px;
+            color: #1e3a8a;
+            font-size: 0.78rem;
+            font-weight: 650;
+            padding: 0.28rem 0.65rem;
         }
 
         .section-header {
             border-left: 4px solid #2563eb;
             padding: 0.15rem 0 0.15rem 0.75rem;
-            margin: 1.35rem 0 0.75rem;
+            margin: 1.1rem 0 0.7rem;
         }
 
         .section-header h2 {
@@ -89,9 +106,9 @@ def inject_dashboard_css() -> None:
         .metric-card {
             background: #ffffff;
             border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1rem 1.05rem;
-            min-height: 8.2rem;
+            border-radius: 14px;
+            padding: 0.95rem 1rem;
+            min-height: 7.65rem;
             box-shadow: 0 8px 22px rgba(15, 23, 42, 0.045);
         }
 
@@ -106,7 +123,7 @@ def inject_dashboard_css() -> None:
 
         .metric-value {
             color: #172033;
-            font-size: 1.65rem;
+            font-size: 1.85rem;
             font-weight: 760;
             margin-bottom: 0.4rem;
         }
@@ -153,6 +170,17 @@ def inject_dashboard_css() -> None:
             padding: 0.95rem 1rem;
             margin: 0.5rem 0 1rem;
         }
+
+        .executive-note {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            color: #475569;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            padding: 0.8rem 0.95rem;
+            margin: 0.85rem 0 0.45rem;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -165,12 +193,13 @@ def render_hero() -> None:
         <div class="hero-card">
             <h1 class="hero-title">VAT Reconciliation Engine</h1>
             <p class="hero-copy">
-                Review VAT source registers, VAT return summary boxes, VAT
-                payment/refund context, and GL VAT control account movement in
-                one deterministic workflow. The dashboard highlights return
-                variances, control account differences, documentation
-                exceptions, and audit-ready workbook evidence for follow-up.
+                Compliance-ready VAT checks across source registers, returns, and GL controls.
             </p>
+            <div class="hero-meta">
+                <span>Config-driven checks</span>
+                <span>Exception register</span>
+                <span>Audit workbook export</span>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -209,6 +238,18 @@ def render_status_card(label: str, value: str, caption: str, status: str, tone: 
             <div class="status-pill status-{tone}">{status}</div>
             <div class="metric-value">{value}</div>
             <div class="metric-caption">{caption}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_executive_note() -> None:
+    st.markdown(
+        """
+        <div class="executive-note">
+            Start with the summary cards, then review reconciliation checks and
+            exceptions for the items that need finance-control follow-up.
         </div>
         """,
         unsafe_allow_html=True,
@@ -276,19 +317,6 @@ with st.sidebar:
         st.caption("The public repo ships with bundled demo data.")
         st.caption("Uploaded CSVs are processed in-session and are not persisted.")
 
-render_section_header(
-    "How To Read This Dashboard",
-    "A short review path for VAT return sign-off and control follow-up.",
-)
-st.markdown(
-    """
-    Start with the variance metrics, then review the reconciliation table to see
-    which control check produced the difference. Use the exception table for
-    transaction-level follow-up, and expand the source registers when you need
-    to trace a dashboard result back to the underlying CSV rows.
-    """
-)
-
 summary = result.summary
 exception_count = len(result.exceptions)
 output_status, output_tone = variance_status(summary.output_vat_variance)
@@ -298,41 +326,43 @@ exceptions_status, exceptions_tone = exception_status(exception_count)
 
 render_section_header(
     "VAT Position Summary",
-    "Status cards show whether each finance-control check passes or needs review.",
+    "Executive snapshot of VAT return, input claim, GL control, and exception status.",
 )
 metric_cols = st.columns(4)
 with metric_cols[0]:
     render_status_card(
-        "Output VAT return variance",
+        "Output VAT",
         f"{summary.output_vat_variance:,.2f}",
-        "Sales-register VAT less VAT return output amount.",
+        "Sales register variance against the VAT return output amount.",
         output_status,
         output_tone,
     )
 with metric_cols[1]:
     render_status_card(
-        "Input VAT claim variance",
+        "Input VAT",
         f"{summary.input_vat_variance:,.2f}",
-        "Claimed purchase VAT less VAT return input amount.",
+        "Purchase claim variance against the VAT return input amount.",
         input_status,
         input_tone,
     )
 with metric_cols[2]:
     render_status_card(
-        "VAT GL control variance",
+        "GL Control",
         f"{summary.gl_control_variance:,.2f}",
-        "Expected VAT control balance compared to GL movement.",
+        "Expected VAT balance compared with GL control movement.",
         gl_status,
         gl_tone,
     )
 with metric_cols[3]:
     render_status_card(
-        "Open review exceptions",
+        "Exceptions",
         str(exception_count),
-        "Documentation, duplicate, unclaimed VAT, and control exceptions.",
+        "Open documentation, duplicate, claim, and control items.",
         exceptions_status,
         exceptions_tone,
     )
+
+render_executive_note()
 
 if exception_count:
     st.warning(f"{exception_count} exceptions need review before sign-off.")
